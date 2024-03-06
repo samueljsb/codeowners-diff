@@ -15,13 +15,13 @@ import codeowners
 from tabulate import tabulate
 
 
-class GitRepo:  # pragma: no cover
+class GitRepo:
     def __init__(self, root_dir: str | None = None) -> None:
-        if root_dir:
+        if root_dir:  # pragma: no cover
             self.root_dir = root_dir
 
     @functools.cached_property
-    def root_dir(self) -> str:
+    def root_dir(self) -> str:  # pragma: no cover
         return subprocess.check_output(
             ('git', 'rev-parse', '--show-toplevel'),
             text=True,
@@ -46,7 +46,7 @@ class GitRepo:  # pragma: no cover
         )
 
 
-class CodeOwners:  # pragma: no cover
+class CodeOwners:
     def __init__(self, src: str) -> None:
         self.code_owners = codeowners.CodeOwners(src)
 
