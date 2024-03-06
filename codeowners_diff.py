@@ -112,13 +112,6 @@ def find_affected_files(path: str, repo: GitRepo) -> frozenset[str]:
     return repo.ls_files(paths)
 
 
-def load_codeowners(ref: str) -> str:  # pragma: no cover
-    return subprocess.check_output(
-        ('git', 'cat-file', 'blob', f'{ref}:.github/CODEOWNERS'),
-        text=True,
-    )
-
-
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description='get a summary of the changes to code owners between two refs',
