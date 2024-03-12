@@ -76,6 +76,7 @@ def repo_with_files(tmp_path_factory: pytest.TempPathFactory):
         ('/foo/bar/', {'foo/bar/baz.py'}),
         ('foo/bar/baz.py', {'foo/bar/baz.py'}),
         ('/foo/fizz', {'foo/fizz/buzz/bang.py'}),
+        ('/invalid', frozenset()),
     ),
 )
 def test_find_affected_files(

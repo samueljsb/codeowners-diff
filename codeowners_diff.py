@@ -106,10 +106,8 @@ def _path_to_glob(path: str) -> str:
 
 def find_affected_files(path: str, repo: GitRepo) -> frozenset[str]:
     glob_ = _path_to_glob(path)
-    paths = glob.glob(
-        glob_, root_dir=repo.root_dir, recursive=True,
-    )
-    return repo.ls_files(paths)
+    paths = glob.glob(glob_, root_dir=repo.root_dir, recursive=True)
+    return repo.ls_files(paths) if paths else frozenset()
 
 
 def main(argv: Sequence[str] | None = None) -> int:
