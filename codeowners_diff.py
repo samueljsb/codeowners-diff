@@ -36,6 +36,9 @@ class GitRepo:
         )
 
     def ls_files(self, paths: Sequence[str]) -> frozenset[str]:
+        if not paths:
+            return frozenset()
+
         return frozenset(
             subprocess.check_output(
                 ('git', 'ls-files', '--', *paths),
