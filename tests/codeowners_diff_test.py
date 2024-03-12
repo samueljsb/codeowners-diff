@@ -15,7 +15,10 @@ foo/bar/ @some-user
 foo/baz/ @another-user
 """
     file_b = """\
+# Team Rules
 foo/ @some/team
+
+# User Rules
 foo/bar/ @another-user
 foo/baz/ @another-user
 """
