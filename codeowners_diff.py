@@ -6,6 +6,7 @@ import functools
 import glob
 import operator
 import os.path
+import re
 import subprocess
 from collections.abc import Iterator
 from collections.abc import Mapping
@@ -88,10 +89,11 @@ class MarkdownPrinter:
 
 def find_affected_paths(a: str, b: str) -> frozenset[str]:
     diff_generator = difflib.Differ().compare(a.splitlines(), b.splitlines())
+    pattern = re.compile(r'^[+-] *(?P<path>[^# ]+)')
     return frozenset(
-        line.split()[1]
+        match.group('path')
         for line in diff_generator
-        if line.startswith('+') or line.startswith('-')
+        if (match := pattern.match(line))
     )
 
 
