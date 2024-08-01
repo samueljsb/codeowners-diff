@@ -35,3 +35,5 @@ jobs:
         git config --global user.email "you@example.com"
         git config --global user.name "Your Name"
     - run: tox run-parallel --parallel-no-spinner
+      env:
+        FORCE_COLOR: true
