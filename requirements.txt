@@ -2,7 +2,7 @@
 #    uv pip compile --output-file=requirements.txt requirements.in setup.cfg
 covdefaults==2.3.0
     # via -r requirements.in
-coverage==7.6.1
+coverage==7.6.3
     # via
     #   -r requirements.in
     #   covdefaults
