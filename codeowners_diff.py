@@ -16,6 +16,9 @@ import codeowners
 from tabulate import tabulate
 
 
+CURRENT_STRING = 'CURRENT'
+
+
 class GitRepo:
     def __init__(self, root_dir: str | None = None) -> None:
         if root_dir:  # pragma: no cover
@@ -29,8 +32,18 @@ class GitRepo:
         ).strip()
 
     def load_codeowners_file(self, ref: str) -> str:
+        cmd: tuple[str, ...] = (
+            'git',
+            'cat-file',
+            'blob',
+            f'{ref}:.github/CODEOWNERS',
+        )
+
+        if ref == CURRENT_STRING:
+            cmd = ('cat', '.github/CODEOWNERS')
+
         return subprocess.check_output(
-            ('git', 'cat-file', 'blob', f'{ref}:.github/CODEOWNERS'),
+            cmd,
             cwd=self.root_dir,
             text=True,
         )
@@ -128,8 +141,12 @@ def main(argv: Sequence[str] | None = None) -> int:
     )
     parser.add_argument(
         'head_ref',
-        nargs='?', default='HEAD',
-        help='default: %(default)s',
+        nargs='?',
+        default='HEAD',
+        help=(
+            f'default: %(default)s, if {CURRENT_STRING!r}, unchecked codeowners will'
+            ' be used'
+        ),
     )
     parser.add_argument(
         '-r', '--repo-root',
