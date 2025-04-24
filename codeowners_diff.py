@@ -29,11 +29,17 @@ class GitRepo:
         ).strip()
 
     def load_codeowners_file(self, ref: str) -> str:
-        return subprocess.check_output(
-            ('git', 'cat-file', 'blob', f'{ref}:.github/CODEOWNERS'),
-            cwd=self.root_dir,
-            text=True,
-        )
+        try:
+            return subprocess.check_output(
+                ('git', 'cat-file', 'blob', f'{ref}:.github/CODEOWNERS'),
+                cwd=self.root_dir,
+                text=True,
+            )
+        except subprocess.CalledProcessError as e:
+            if e.returncode == 128:
+                # the file does not exist
+                return ''
+            raise
 
     def ls_files(self, paths: Sequence[str]) -> frozenset[str]:
         if not paths:

@@ -92,6 +92,21 @@ def test_find_affected_files(
     assert affected_files == expected_files
 
 
+class TestGitRepo:
+    def test_handle_missing_codeowners_file(
+            self, tmp_path_factory: pytest.TempPathFactory,
+    ) -> None:
+        # create a git repo
+        repo_root = tmp_path_factory.mktemp('repo_with_files')
+        subprocess.run(('git', 'init'), cwd=repo_root)
+
+        git_repo = codeowners_diff.GitRepo(str(repo_root))
+
+        codeowners_file = git_repo.load_codeowners_file('HEAD')
+
+        assert codeowners_file == ''
+
+
 class TestMarkdownPrinter:
     def test_render_lines(self) -> None:
         printer = codeowners_diff.MarkdownPrinter({
