@@ -8,7 +8,7 @@ import pytest
 import codeowners_diff
 
 
-def test_find_affected_globs():
+def test_find_affected_globs() -> None:
     file_a = """\
 foo/ @some/team
 foo/bar/ @some-user
@@ -39,12 +39,12 @@ foo/baz/ @another-user
         ('foo/b*', '**/foo/b*'),
     ),
 )
-def test_path_to_glob(path: str, glob: str):
+def test_path_to_glob(path: str, glob: str) -> None:
     assert codeowners_diff._path_to_glob(path) == glob
 
 
 @pytest.fixture(scope='session')
-def repo_with_files(tmp_path_factory: pytest.TempPathFactory):
+def repo_with_files(tmp_path_factory: pytest.TempPathFactory) -> Path:
     """Set up a git repo with a nested file structure:
 
     foo/
@@ -84,7 +84,7 @@ def repo_with_files(tmp_path_factory: pytest.TempPathFactory):
 )
 def test_find_affected_files(
         path: str, expected_files: set[str], repo_with_files: Path,
-):
+) -> None:
     """Check that GitHub CODEOWNERS patters are interpreted correctly."""
     affected_files = codeowners_diff.find_affected_files(
         path, codeowners_diff.GitRepo(str(repo_with_files)),
@@ -93,7 +93,7 @@ def test_find_affected_files(
 
 
 class TestMarkdownPrinter:
-    def test_render_lines(self):
+    def test_render_lines(self) -> None:
         printer = codeowners_diff.MarkdownPrinter({
             'foo/bar/baz.py': {
                 'base': ('@some-owner', '@some/team'),
@@ -114,14 +114,14 @@ class TestMarkdownPrinter:
 | `foo/bar/bang.py` | @some/team              | @another/team, @some-user |
 | `foo/bar/baz.py`  | @some-owner, @some/team | @another/team             |"""
 
-    def test_no_changes(self):
+    def test_no_changes(self) -> None:
         printer = codeowners_diff.MarkdownPrinter({})
 
         lines = printer.render_lines()
         assert '\n'.join(lines) == 'No files have changed ownership.'
 
 
-def test_codeowners_diff(tmp_path: Path, capsys: pytest.CaptureFixture[str]):
+def test_codeowners_diff(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     """End-to-end test of the CLI."""
     # set up a git repo with a file in it
     (tmp_path / 'source_code.py').touch()
