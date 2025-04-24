@@ -11,35 +11,9 @@ import codeowners_diff
 def test_compare_two_branches(
         tmp_path: Path, capsys: pytest.CaptureFixture[str],
 ) -> None:
-    # set up a git repo with a file in it
-    (tmp_path / 'source_code.py').touch()
-    subprocess.run(('git', 'init'), cwd=tmp_path)
-    subprocess.run(('git', 'add', '.'), cwd=tmp_path)
-    subprocess.run(('git', 'commit', '--no-gpg-sign', '-m', 'initial'), cwd=tmp_path)
-
-    # create a CODEOWNERS file in a branch
-    subprocess.run(('git', 'switch', '-c', 'branch-a'), cwd=tmp_path)
-    (tmp_path / '.github').mkdir(exist_ok=True)
-    (tmp_path / '.github' / 'CODEOWNERS').write_text("""\
-* @some-user
-""")
-    subprocess.run(('git', 'add', '.'), cwd=tmp_path)
-    subprocess.run(
-        ('git', 'commit', '--no-gpg-sign', '-m', 'add code owners'),
-        cwd=tmp_path,
-    )
-
-    # create a different CODEOWNERS file in another branch
-    subprocess.run(('git', 'switch', '-c', 'branch-b', 'main'), cwd=tmp_path)
-    (tmp_path / '.github').mkdir(exist_ok=True)
-    (tmp_path / '.github' / 'CODEOWNERS').write_text("""\
-* @another/team
-""")
-    subprocess.run(('git', 'add', '.'), cwd=tmp_path)
-    subprocess.run(
-        ('git', 'commit', '--no-gpg-sign', '-m', 'add code owners'),
-        cwd=tmp_path,
-    )
+    _create_git_repo(tmp_path)
+    _create_branch(tmp_path, 'branch-a', '@some-user')
+    _create_branch(tmp_path, 'branch-b', '@another/team')
 
     codeowners_diff.main(('branch-a', 'branch-b', '--repo-root', str(tmp_path)))
 
@@ -52,3 +26,24 @@ def test_compare_two_branches(
 | `source_code.py` | @some-user   | @another/team |
 """
     assert captured.err == ''
+
+
+def _create_git_repo(root_dir: Path) -> None:
+    subprocess.run(('git', 'init'), cwd=root_dir)
+
+    (root_dir / 'source_code.py').touch()
+    subprocess.run(('git', 'add', '.'), cwd=root_dir)
+    subprocess.run(('git', 'commit', '--no-gpg-sign', '-m', 'initial'), cwd=root_dir)
+
+
+def _create_branch(repo_root: Path, branch_name: str, code_owner: str) -> None:
+    subprocess.run(('git', 'switch', '-c', branch_name), cwd=repo_root)
+    (repo_root / '.github').mkdir(exist_ok=True)
+    (repo_root / '.github' / 'CODEOWNERS').write_text(f"""\
+* {code_owner}
+""")
+    subprocess.run(('git', 'add', '.'), cwd=repo_root)
+    subprocess.run(
+        ('git', 'commit', '--no-gpg-sign', '-m', 'add code owners'),
+        cwd=repo_root,
+    )
