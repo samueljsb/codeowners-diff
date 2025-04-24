@@ -7,18 +7,17 @@ when a GitHub `CODEOWNERS` file changes.
 
 ```console
 $ codeowners-diff --help
-usage: codeowners-diff [-h] [-r REPO_ROOT] [base_ref] [head_ref]
+usage: codeowners-diff [-h] [-C REPO_ROOT] [base_ref] [head_ref]
 
 get a summary of the changes to code owners between two refs
 
 positional arguments:
-  base_ref              default: main
-  head_ref              default: HEAD
+  base_ref      default: HEAD
+  head_ref      default: the working tree
 
 options:
-  -h, --help            show this help message and exit
-  -r REPO_ROOT, --repo-root REPO_ROOT
-                        git repository to run the tool in (default: current directory)
+  -h, --help    show this help message and exit
+  -C REPO_ROOT  git repository to run the tool in (default: current directory)
 ```
 
 By default,
