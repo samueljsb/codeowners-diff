@@ -144,7 +144,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument(
         'head_ref',
         nargs='?', default='',
-        help='default: %(default)s',
+        help='default: the working tree',
     )
     parser.add_argument(
         '-C',
