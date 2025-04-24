@@ -28,6 +28,45 @@ def test_compare_two_branches(
     assert captured.err == ''
 
 
+def test_compare_HEAD_with_another_branch(
+        tmp_path: Path, capsys: pytest.CaptureFixture[str],
+) -> None:
+    _create_git_repo(tmp_path)
+    _create_branch(tmp_path, 'branch-a', '@some-user')
+    _create_branch(tmp_path, 'branch-b', '@another/team')  # HEAD
+
+    codeowners_diff.main(('branch-a', '--repo-root', str(tmp_path)))
+
+    captured = capsys.readouterr()
+    assert captured.out == """\
+1 files have changed ownership:
+
+| file             | `branch-a`   | `HEAD`        |
+|:-----------------|:-------------|:--------------|
+| `source_code.py` | @some-user   | @another/team |
+"""
+    assert captured.err == ''
+
+
+def test_compare_HEAD_with_main(
+        tmp_path: Path, capsys: pytest.CaptureFixture[str],
+) -> None:
+    _create_git_repo(tmp_path)
+    _create_branch(tmp_path, 'branch-a', '@some-user')  # HEAD
+
+    codeowners_diff.main(('--repo-root', str(tmp_path)))
+
+    captured = capsys.readouterr()
+    assert captured.out == """\
+1 files have changed ownership:
+
+| file             | `main`   | `HEAD`     |
+|:-----------------|:---------|:-----------|
+| `source_code.py` |          | @some-user |
+"""
+    assert captured.err == ''
+
+
 def _create_git_repo(root_dir: Path) -> None:
     subprocess.run(('git', 'init'), cwd=root_dir)
 
