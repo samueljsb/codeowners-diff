@@ -15,7 +15,7 @@ def test_compare_two_branches(
     _create_branch(tmp_path, 'branch-a', '@some-user')
     _create_branch(tmp_path, 'branch-b', '@another/team')
 
-    codeowners_diff.main(('branch-a', 'branch-b', '--repo-root', str(tmp_path)))
+    codeowners_diff.main(('branch-a', 'branch-b', '-C', str(tmp_path)))
 
     captured = capsys.readouterr()
     assert captured.out == """\
@@ -28,41 +28,54 @@ def test_compare_two_branches(
     assert captured.err == ''
 
 
-def test_compare_HEAD_with_another_branch(
+def test_compare_working_tree_with_another_branch(
         tmp_path: Path, capsys: pytest.CaptureFixture[str],
 ) -> None:
     _create_git_repo(tmp_path)
     _create_branch(tmp_path, 'branch-a', '@some-user')
-    _create_branch(tmp_path, 'branch-b', '@another/team')  # HEAD
 
-    codeowners_diff.main(('branch-a', '--repo-root', str(tmp_path)))
+    # Change the working copy of the CODEOWNERS file,
+    # without committing it.
+    subprocess.run(('git', 'switch', 'main'), cwd=tmp_path)
+    (tmp_path / '.github').mkdir(exist_ok=True)
+    (tmp_path / '.github' / 'CODEOWNERS').write_text("""\
+* @another/team
+""")
+
+    codeowners_diff.main(('branch-a', '-C', str(tmp_path)))
 
     captured = capsys.readouterr()
     assert captured.out == """\
 1 files have changed ownership:
 
-| file             | `branch-a`   | `HEAD`        |
-|:-----------------|:-------------|:--------------|
-| `source_code.py` | @some-user   | @another/team |
+| file             | `branch-a`   | working tree   |
+|:-----------------|:-------------|:---------------|
+| `source_code.py` | @some-user   | @another/team  |
 """
     assert captured.err == ''
 
 
-def test_compare_HEAD_with_main(
+def test_compare_working_tree_with_HEAD(
         tmp_path: Path, capsys: pytest.CaptureFixture[str],
 ) -> None:
-    _create_git_repo(tmp_path)
-    _create_branch(tmp_path, 'branch-a', '@some-user')  # HEAD
+    _create_git_repo(tmp_path)  # HEAD
 
-    codeowners_diff.main(('--repo-root', str(tmp_path)))
+    # Change the working copy of the CODEOWNERS file,
+    # without committing it.
+    (tmp_path / '.github').mkdir(exist_ok=True)
+    (tmp_path / '.github' / 'CODEOWNERS').write_text("""\
+* @some-user
+""")
+
+    codeowners_diff.main(('-C', str(tmp_path)))
 
     captured = capsys.readouterr()
     assert captured.out == """\
 1 files have changed ownership:
 
-| file             | `main`   | `HEAD`     |
-|:-----------------|:---------|:-----------|
-| `source_code.py` |          | @some-user |
+| file             | `HEAD`   | working tree   |
+|:-----------------|:---------|:---------------|
+| `source_code.py` |          | @some-user     |
 """
     assert captured.err == ''
 
