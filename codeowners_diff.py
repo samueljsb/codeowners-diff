@@ -138,8 +138,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         help='default: %(default)s',
     )
     parser.add_argument(
-        '-r', '--repo-root',
-        default=None,
+        '-C',
+        dest='repo_root', default=None,
         help='git repository to run the tool in (default: current directory)',
     )
     args = parser.parse_args(argv)

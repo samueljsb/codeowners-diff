@@ -15,7 +15,7 @@ def test_compare_two_branches(
     _create_branch(tmp_path, 'branch-a', '@some-user')
     _create_branch(tmp_path, 'branch-b', '@another/team')
 
-    codeowners_diff.main(('branch-a', 'branch-b', '--repo-root', str(tmp_path)))
+    codeowners_diff.main(('branch-a', 'branch-b', '-C', str(tmp_path)))
 
     captured = capsys.readouterr()
     assert captured.out == """\
@@ -35,7 +35,7 @@ def test_compare_HEAD_with_another_branch(
     _create_branch(tmp_path, 'branch-a', '@some-user')
     _create_branch(tmp_path, 'branch-b', '@another/team')  # HEAD
 
-    codeowners_diff.main(('branch-a', '--repo-root', str(tmp_path)))
+    codeowners_diff.main(('branch-a', '-C', str(tmp_path)))
 
     captured = capsys.readouterr()
     assert captured.out == """\
@@ -54,7 +54,7 @@ def test_compare_HEAD_with_main(
     _create_git_repo(tmp_path)
     _create_branch(tmp_path, 'branch-a', '@some-user')  # HEAD
 
-    codeowners_diff.main(('--repo-root', str(tmp_path)))
+    codeowners_diff.main(('-C', str(tmp_path)))
 
     captured = capsys.readouterr()
     assert captured.out == """\
