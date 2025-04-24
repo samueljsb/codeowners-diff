@@ -10,6 +10,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - `--repo-root` option is now `-C`.
   This matches the `git` CLI.
+- The arguments passed to `codeowners-diff`
+  now behave like the arguments `git diff`:
+
+  command                   | previous comparison | new comparison
+  ------------------------- | ------------------- | ------------------------
+  `codeowners-diff foo bar` | `bar` from `foo`    | `bar` from `foo`
+  `codeowners-diff foo`     | `HEAD` from `foo`   | working tree from `foo`
+  `codeowners-diff`         | `HEAD` from `main`  | working tree from `HEAD`
 
 ## v0.1.1 (2024-03-12)
 

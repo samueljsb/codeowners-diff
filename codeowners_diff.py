@@ -29,6 +29,9 @@ class GitRepo:
         ).strip()
 
     def load_codeowners_file(self, ref: str) -> str:
+        if not ref:
+            with open(os.path.join(self.root_dir, '.github/CODEOWNERS')) as f:
+                return f.read()
         try:
             return subprocess.check_output(
                 ('git', 'cat-file', 'blob', f'{ref}:.github/CODEOWNERS'),
@@ -83,7 +86,7 @@ class MarkdownPrinter:
                     {
                         'file': f'`{file}`',
                         **{
-                            f'`{ref}`': ', '.join(owners_)
+                            self._column_title(ref): ', '.join(owners_)
                             for ref, owners_ in owners.items()
                         },
                     }
@@ -94,6 +97,12 @@ class MarkdownPrinter:
             headers='keys',
             tablefmt='pipe',
         ).splitlines()
+
+    def _column_title(self, ref: str) -> str:
+        if ref:
+            return f'`{ref}`'
+        else:
+            return 'working tree'
 
 
 def find_affected_paths(a: str, b: str) -> frozenset[str]:
@@ -129,12 +138,12 @@ def main(argv: Sequence[str] | None = None) -> int:
     )
     parser.add_argument(
         'base_ref',
-        nargs='?', default='main',
+        nargs='?', default='HEAD',
         help='default: %(default)s',
     )
     parser.add_argument(
         'head_ref',
-        nargs='?', default='HEAD',
+        nargs='?', default='',
         help='default: %(default)s',
     )
     parser.add_argument(
