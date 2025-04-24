@@ -67,8 +67,3 @@ strict_equality = true
 warn_redundant_casts = true
 warn_unreachable = true
 warn_unused_ignores = true
-
-[[tool.mypy.overrides]]
-module = "tests.*"
-disallow_incomplete_defs = false
-disallow_untyped_defs = false
