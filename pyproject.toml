@@ -23,13 +23,6 @@ dependencies = [  # pragma: alphabetize[case-insensitive]
   "tabulate",
 ]
 
-[dependency-groups]
-test = [  # pragma: alphabetize[case-insensitive]
-  "covdefaults",
-  "coverage",
-  "pytest",
-]
-
 [project.scripts]
 codeowners-diff = "codeowners_diff:main"
 
