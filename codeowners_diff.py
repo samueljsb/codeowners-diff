@@ -167,6 +167,11 @@ def main(argv: Sequence[str] | None = None) -> int:
         dest='repo_root', default=None,
         help='git repository to run the tool in (default: current directory)',
     )
+    parser.add_argument(
+        '--limit',
+        default=None,
+        help='maximum files to show in diff message (default: no limit)',
+    )
     args = parser.parse_args(argv)
 
     git_repo = GitRepo(args.repo_root)
@@ -196,7 +201,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         if base_file_owners[file] != head_file_owners[file]
     }
 
-    printer = MarkdownPrinter(changed_file_owners, max_files_to_print=None)
+    printer = MarkdownPrinter(changed_file_owners, max_files_to_print=args.limit)
     print(*printer.render_lines(), sep='\n')
 
     return 0
