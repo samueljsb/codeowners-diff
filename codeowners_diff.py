@@ -4,7 +4,6 @@ import argparse
 import difflib
 import functools
 import glob
-import operator
 import os.path
 import re
 import subprocess
@@ -69,9 +68,12 @@ class CodeOwners:
 
 class MarkdownPrinter:
     def __init__(
-        self, changed_owners: Mapping[str, Mapping[str, tuple[str, ...]]],
+        self,
+        changed_owners: Mapping[str, Mapping[str, tuple[str, ...]]],
+        max_files_to_print: int | None,
     ) -> None:
         self.changed_owners = changed_owners
+        self.max_files_to_print = max_files_to_print
 
     def render_lines(self) -> Iterator[str]:
         if not self.changed_owners:
@@ -80,23 +82,37 @@ class MarkdownPrinter:
 
         yield f'{len(self.changed_owners)} files have changed ownership:'
         yield ''
-        yield from tabulate(
+
+        files_to_print = list(
             sorted(
-                (
-                    {
-                        'file': f'`{file}`',
-                        **{
-                            self._column_title(ref): ', '.join(owners_)
-                            for ref, owners_ in owners.items()
-                        },
-                    }
-                    for file, owners in self.changed_owners.items()
-                ),
-                key=operator.itemgetter('file'),  # type: ignore[arg-type]
+                self.changed_owners.items(),
+            ),
+        )[:self.max_files_to_print]
+
+        yield from tabulate(
+            (
+                {
+                    'file': f'`{file}`',
+                    **{
+                        self._column_title(ref): ', '.join(owners_)
+                        for ref, owners_ in owners.items()
+                    },
+                }
+                for file, owners in files_to_print
             ),
             headers='keys',
             tablefmt='pipe',
         ).splitlines()
+
+        if (
+            self.max_files_to_print is not None and
+            (len(self.changed_owners) > self.max_files_to_print)
+        ):
+            yield ''
+            yield (
+                'Note that the above table was truncated to '
+                f'{self.max_files_to_print} items.'
+            )
 
     def _column_title(self, ref: str) -> str:
         if ref:
@@ -180,7 +196,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         if base_file_owners[file] != head_file_owners[file]
     }
 
-    printer = MarkdownPrinter(changed_file_owners)
+    printer = MarkdownPrinter(changed_file_owners, max_files_to_print=None)
     print(*printer.render_lines(), sep='\n')
 
     return 0
