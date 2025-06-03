@@ -30,11 +30,20 @@ codeowners-diff = "codeowners_diff:main"
 Source = "https://github.com/samueljsb/codeowners-diff"
 Changelog = "https://github.com/samueljsb/codeowners-diff/blob/main/CHANGELOG.md"
 
+
+# Packaging
+# ---------
+
 [build-system]
 requires = ["setuptools>=77.0.3", "setuptools-scm"]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools]
+# This is the default but we include it to be explicit.
+include-package-data = true
+
 [tool.setuptools_scm]
+
 
 # Mypy
 # ====
