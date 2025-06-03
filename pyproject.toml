@@ -57,3 +57,17 @@ enable_error_code = [  # pragma: alphabetize
 strict = true
 warn_unreachable = true
 warn_no_return = true
+
+
+# Pytest
+# ======
+
+[tool.pytest.ini_options]
+addopts = [
+  "--strict-markers",
+]
+filterwarnings = [
+  "error::DeprecationWarning",
+  "error::pytest.PytestCollectionWarning",
+]
+xfail_strict = true
