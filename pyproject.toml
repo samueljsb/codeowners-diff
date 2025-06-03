@@ -30,11 +30,20 @@ codeowners-diff = "codeowners_diff:main"
 Source = "https://github.com/samueljsb/codeowners-diff"
 Changelog = "https://github.com/samueljsb/codeowners-diff/blob/main/CHANGELOG.md"
 
+
+# Packaging
+# ---------
+
 [build-system]
-requires = ["setuptools", "setuptools-scm"]
+requires = ["setuptools>=77.0.3", "setuptools-scm"]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools]
+# This is the default but we include it to be explicit.
+include-package-data = true
+
 [tool.setuptools_scm]
+
 
 # Mypy
 # ====
@@ -47,6 +56,7 @@ exclude = [
 ]
 
 pretty = true
+show_error_codes = true
 
 enable_error_code = [  # pragma: alphabetize
   "ignore-without-code",
@@ -55,5 +65,29 @@ enable_error_code = [  # pragma: alphabetize
   "truthy-iterable",
 ]
 strict = true
+ignore_missing_imports = true
+no_implicit_optional = true
+strict_equality = true
 warn_unreachable = true
 warn_no_return = true
+
+
+# Pytest
+# ======
+
+[tool.pytest.ini_options]
+addopts = [
+  "--strict-markers",
+]
+filterwarnings = [
+  "error::DeprecationWarning",
+  "error::pytest.PytestCollectionWarning",
+]
+xfail_strict = true
+
+
+# Coverage
+# ========
+
+[tool.coverage.run]
+plugins = ["covdefaults"]
