@@ -71,3 +71,10 @@ filterwarnings = [
   "error::pytest.PytestCollectionWarning",
 ]
 xfail_strict = true
+
+
+# Coverage
+# ========
+
+[tool.coverage.run]
+plugins = ["covdefaults"]
