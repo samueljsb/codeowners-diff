@@ -80,6 +80,29 @@ def test_compare_working_tree_with_HEAD(
     assert captured.err == ''
 
 
+def test_limit_is_respected(
+        tmp_path: Path, capsys: pytest.CaptureFixture[str],
+) -> None:
+    _create_git_repo(tmp_path)
+    _create_branch(tmp_path, 'branch-a', '@some-user')
+    _create_branch(tmp_path, 'branch-b', '@another/team')
+
+    codeowners_diff.main(
+        ('branch-a', 'branch-b', '-C', str(tmp_path), '--limit', '0'),
+    )
+
+    captured = capsys.readouterr()
+    assert captured.out == """\
+1 files have changed ownership:
+
+| file             | `branch-a`   | `branch-b`    |
+|:-----------------|:-------------|:--------------|
+
+Note that the above table was truncated to 0 items.
+"""
+    assert captured.err == ''
+
+
 def _create_git_repo(root_dir: Path) -> None:
     subprocess.run(('git', 'init'), cwd=root_dir)
 
