@@ -3,8 +3,7 @@ name: tests
 on:
   pull_request:
   push:
-    branches:
-    - main
+    branches: [main]
 
 # Only allow one instance of this workflow for each PR.
 concurrency:
