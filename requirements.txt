@@ -1,8 +1,0 @@
-# Testing
-covdefaults
-coverage
-pytest
-
-# Type-checking
-mypy
-types-tabulate

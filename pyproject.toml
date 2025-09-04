@@ -45,6 +45,22 @@ include-package-data = true
 [tool.setuptools_scm]
 
 
+# Development
+# -----------
+
+[dependency-groups]
+test = [
+  "pytest",
+  "coverage",
+  "covdefaults",
+]
+mypy = [
+  "mypy",
+  "types-tabulate",
+  {include-group = "test"},
+]
+
+
 # Mypy
 # ====
 
