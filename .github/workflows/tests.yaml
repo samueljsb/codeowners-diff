@@ -3,8 +3,7 @@ name: tests
 on:
   pull_request:
   push:
-    branches:
-    - main
+    branches: [main]
 
 # Only allow one instance of this workflow for each PR.
 concurrency:
@@ -25,9 +24,6 @@ jobs:
           3.12
           3.13
         allow-prereleases: true
-        cache: 'pip'
-        cache-dependency-path: |
-          requirements.txt
     - run: python -m pip install tox
     - run: |
         git config --global init.defaultBranch main
