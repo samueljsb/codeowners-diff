@@ -109,16 +109,18 @@ class TestGitRepo:
 
 class TestMarkdownPrinter:
     def test_render_lines(self) -> None:
-        printer = codeowners_diff.MarkdownPrinter({
-            'foo/bar/baz.py': {
-                'base': ('@some-owner', '@some/team'),
-                'HEAD': ('@another/team',),
-            },
-            'foo/bar/bang.py': {
-                'base': ('@some/team',),
-                'HEAD': ('@another/team', '@some-user'),
-            },
-        })
+        printer = codeowners_diff.MarkdownPrinter(
+            {
+                'foo/bar/baz.py': {
+                    'base': ('@some-owner', '@some/team'),
+                    'HEAD': ('@another/team',),
+                },
+                'foo/bar/bang.py': {
+                    'base': ('@some/team',),
+                    'HEAD': ('@another/team', '@some-user'),
+                },
+            }, None,
+        )
 
         lines = printer.render_lines()
         assert '\n'.join(lines) == """\
@@ -130,7 +132,36 @@ class TestMarkdownPrinter:
 | `foo/bar/baz.py`  | @some-owner, @some/team | @another/team             |"""
 
     def test_no_changes(self) -> None:
-        printer = codeowners_diff.MarkdownPrinter({})
+        printer = codeowners_diff.MarkdownPrinter({}, None)
 
         lines = printer.render_lines()
         assert '\n'.join(lines) == 'No files have changed ownership.'
+
+    def test_max_files_to_print(self) -> None:
+        printer = codeowners_diff.MarkdownPrinter(
+            {
+                'foo/bar/baz.py': {
+                    'base': ('@some-owner', '@some/team'),
+                    'HEAD': ('@another/team',),
+                },
+                'foo/bar/bash.py': {
+                    'base': ('@some-owner', '@some/team'),
+                    'HEAD': ('@another/team',),
+                },
+                'foo/bar/bang.py': {
+                    'base': ('@some/team',),
+                    'HEAD': ('@another/team', '@some-user'),
+                },
+            }, None,
+        )
+
+        lines = printer.render_lines()
+        assert '\n'.join(lines) == """\
+3 files have changed ownership:
+
+| file              | `base`                  | `HEAD`                    |
+|:------------------|:------------------------|:--------------------------|
+| `foo/bar/bang.py` | @some/team              | @another/team, @some-user |
+| `foo/bar/baz.py`  | @some-owner, @some/team | @another/team             |
+
+Note that the above table was truncated to 2 items."""
